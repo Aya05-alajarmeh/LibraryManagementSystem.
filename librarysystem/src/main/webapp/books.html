@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Manage Books - Library Management System</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        height: 100vh;
+        background-color: #0b0f19;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        overflow: hidden;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        background:
+          linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+          url("https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1920&auto=format&fit=crop")
+            no-repeat center center fixed;
+        background-size: cover;
+        color: #f8fafc;
+      }
+
+      .main-header {
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 18px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+      }
+
+      .header-brand {
+        font-size: 20px;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .header-brand span {
+        color: #38bdf8;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 8px;
+        list-style: none;
+      }
+
+      .nav-links li {
+        padding: 9px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: #cbd5e1;
+        transition: all 0.2s ease;
+      }
+
+      .nav-links li:hover {
+        background: rgba(56, 189, 248, 0.15);
+        color: #ffffff;
+      }
+
+      .nav-links li.active {
+        background: #38bdf8;
+        color: #0f172a;
+        font-weight: 600;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .user-badge {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 7px 14px;
+        border-radius: 20px;
+        color: #e2e8f0;
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .logout-btn {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+        transition: all 0.2s ease;
+      }
+
+      .logout-btn:hover {
+        background: #ef4444;
+        color: #ffffff;
+      }
+
+      .dashboard-container {
+        flex-grow: 1;
+        padding: 30px 40px;
+        overflow-y: auto;
+        max-width: 1300px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .page-header h2 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #ffffff;
+      }
+
+      .action-btn {
+        background: #38bdf8;
+        color: #0f172a;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .action-btn:hover {
+        background: #0ea5e9;
+        box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+      }
+
+      .table-container {
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      th {
+        background: rgba(30, 41, 59, 0.8);
+        color: #38bdf8;
+        font-weight: 600;
+      }
+
+      .book-row {
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .book-row:hover {
+        background: rgba(56, 189, 248, 0.08);
+      }
+
+      .btn-borrow {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+
+      .btn-borrow:hover {
+        background: #22c55e;
+        color: #ffffff;
+      }
+
+      .btn-delete {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s;
+      }
+
+      .btn-delete:hover {
+        background: #ef4444;
+        color: #ffffff;
+      }
+
+      .sub-row {
+        background: rgba(11, 15, 25, 0.8) !important;
+        cursor: default !important;
+      }
+
+      .sub-table-wrapper {
+        padding: 15px 25px;
+      }
+
+      .sub-table {
+        width: 100%;
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .sub-table th {
+        background: rgba(15, 23, 42, 0.9);
+        color: #e2e8f0;
+        font-size: 12px;
+        padding: 10px 15px;
+      }
+
+      .sub-table td {
+        padding: 10px 15px;
+        font-size: 13px;
+        color: #cbd5e1;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      .badge-status {
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .badge-available {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+      }
+      .badge-borrowed {
+        background: rgba(234, 179, 8, 0.15);
+        color: #facc15;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal-box {
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 14px;
+        width: 450px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-box h3 {
+        color: #ffffff;
+        margin-bottom: 20px;
+        font-size: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 13px;
+        color: #94a3b8;
+        margin-bottom: 6px;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 10px 14px;
+        background: rgba(30, 41, 59, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 14px;
+        font-family: inherit;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #38bdf8;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+      }
+
+      .btn-cancel {
+        background: rgba(255, 255, 255, 0.08);
+        color: #cbd5e1;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+
+      .btn-cancel:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="header-brand">Library<span>System</span></div>
+
+      <ul class="nav-links">
+        <li onclick="navigateTo('dashboard.html')">Dashboard</li>
+        <li id="navUsers" onclick="navigateTo('users.html')">Users</li>
+        <li onclick="navigateTo('members.html')">Members</li>
+        <li class="active" onclick="navigateTo('books.html')">Books</li>
+        <li onclick="navigateTo('categories.html')">Categories</li>
+        <li onclick="navigateTo('borrow.html')">Borrowings</li>
+        <li onclick="navigateTo('fines.html')">Fines</li>
+      </ul>
+
+      <div class="header-right">
+        <div class="user-badge" id="userProfileName">Loading...</div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <main class="dashboard-container">
+      <div class="page-header">
+        <h2>Books Management</h2>
+        <button class="action-btn" onclick="openAddModal()">
+          + Add New Book
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>ISBN</th>
+              <th>Category</th>
+              <th>Count</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="booksTableBody">
+            <tr>
+              <td colspan="7" style="text-align: center; color: #94a3b8">
+                Loading books...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <div class="modal-overlay" id="bookModal">
+      <div class="modal-box">
+        <h3>Add New Book</h3>
+        <form id="bookForm" onsubmit="handleFormSubmit(event)">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="title" required />
+          </div>
+
+          <div class="form-group">
+            <label>Author</label>
+            <input type="text" id="author" required />
+          </div>
+
+          <div class="form-group">
+            <label>ISBN</label>
+            <input type="text" id="isbn" required />
+          </div>
+
+          <div class="form-group">
+            <label>Barcode</label>
+            <input type="text" id="barcode" required />
+          </div>
+
+          <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" id="quantity" min="1" value="1" required />
+          </div>
+
+          <div class="form-group">
+            <label>Category</label>
+            <select id="categoryId" required>
+              <option value="">Select Category</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeModal()">
+              Cancel
+            </button>
+            <button type="submit" class="action-btn">Save Book</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="borrowModal">
+      <div class="modal-box">
+        <h3>Borrow Book</h3>
+        <form id="borrowForm" onsubmit="handleBorrowSubmit(event)">
+          <input type="hidden" id="borrowBookId" />
+          <div class="form-group">
+            <label>Select Member</label>
+            <select id="borrowMemberId" required>
+              <option value="">Loading members...</option>
+            </select>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-cancel"
+              onclick="closeBorrowModal()"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="action-btn">Confirm Borrow</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const CONTEXT_PATH = "/librarysystem-1.0-SNAPSHOT";
+      let booksData = [];
+
+      const userJson = localStorage.getItem("currentUser");
+      let currentUserId = null;
+
+      if (!userJson) {
+        window.location.href = CONTEXT_PATH + "/login.html";
+      } else {
+        const user = JSON.parse(userJson);
+        currentUserId = user.personId || user.id;
+        document.getElementById("userProfileName").innerText =
+          `${user.firstName} ${user.lastName} (${user.role})`;
+
+        if (user.role !== "ADMIN") {
+          const navUsers = document.getElementById("navUsers");
+          if (navUsers) navUsers.classList.add("hidden");
+        }
+        loadBooks();
+        loadCategoriesDropdown();
+      }
+
+      async function loadBooks() {
+        try {
+          const response = await fetch(CONTEXT_PATH + "/api/books");
+          if (response.ok) {
+            booksData = await response.json();
+            const tbody = document.getElementById("booksTableBody");
+            tbody.innerHTML = "";
+
+            if (!booksData || booksData.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8;">No books found.</td></tr>`;
+              return;
+            }
+
+            booksData.forEach((b) => {
+              const bookId = b.bookId || b.id;
+              const bookCount =
+                b.count !== undefined
+                  ? b.count
+                  : b.copies
+                    ? b.copies.length
+                    : 0;
+              const categoryName =
+                b.categoryName ||
+                (b.category
+                  ? b.category.categoryName || b.category.name
+                  : "N/A");
+
+              tbody.innerHTML += `
+                <tr id="book-row-${bookId}" class="book-row" onclick="toggleBookCopies(${bookId})">
+                    <td>${bookId}</td>
+                    <td>${b.title}</td>
+                    <td>${b.author}</td>
+                    <td>${b.isbn}</td>
+                    <td>${categoryName}</td>
+                    <td><span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 4px 10px; border-radius: 12px; font-weight: 600;">${bookCount}</span></td>
+                    <td onclick="event.stopPropagation()" style="display: flex; gap: 8px; align-items: center;">
+                        <button class="btn-borrow" onclick="openBorrowModal(${bookId})">Borrow</button>
+                        <button class="btn-delete" onclick="deleteBook(${bookId})">Delete</button>
+                    </td>
+                </tr>
+              `;
+            });
+          }
+        } catch (error) {
+          console.error("Error loading books:", error);
+        }
+      }
+
+      async function openBorrowModal(bookId) {
+        document.getElementById("borrowBookId").value = bookId;
+        const select = document.getElementById("borrowMemberId");
+        select.innerHTML = '<option value="">Loading members...</option>';
+
+        document.getElementById("borrowModal").classList.add("active");
+
+        try {
+          const response = await fetch(CONTEXT_PATH + "/api/members");
+          if (response.ok) {
+            const members = await response.json();
+            select.innerHTML = '<option value="">Select Member</option>';
+
+            members.forEach((m) => {
+              const memberId = m.personId || m.id;
+              const memberName = m.fullName || m.firstName + " " + m.lastName;
+
+              const opt = document.createElement("option");
+              opt.value = memberId;
+              opt.textContent = `${memberName} (ID: ${memberId})`;
+              select.appendChild(opt);
+            });
+          } else {
+            const err = await response.json().catch(() => ({}));
+            select.innerHTML = `<option value="">${err.error || "Failed to load members"}</option>`;
+          }
+        } catch (error) {
+          console.error("Error loading members:", error);
+          select.innerHTML = '<option value="">Error loading members</option>';
+        }
+      }
+
+      function closeBorrowModal() {
+        document.getElementById("borrowModal").classList.remove("active");
+      }
+
+      async function handleBorrowSubmit(event) {
+        event.preventDefault();
+
+        const bookId = parseInt(document.getElementById("borrowBookId").value);
+        const memberId = parseInt(
+          document.getElementById("borrowMemberId").value,
+        );
+        const userId = parseInt(currentUserId);
+
+        const requestData = {
+          bookId: bookId,
+          memberId: memberId,
+          userId: userId,
+        };
+
+        try {
+          const response = await fetch(CONTEXT_PATH + "/api/borrows/borrow", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          const responseText = await response.text();
+
+          if (response.ok) {
+            try {
+              const result = JSON.parse(responseText);
+              alert(result.message || "Book borrowed successfully");
+            } catch (e) {
+              alert("Book borrowed successfully");
+            }
+            closeBorrowModal();
+            loadBooks();
+          } else {
+            console.error("Server Error Response:", responseText);
+            alert("Error: " + (responseText || "Borrow operation failed"));
+          }
+        } catch (error) {
+          console.error("Error borrowing book:", error);
+          alert("An error occurred while processing the borrow operation.");
+        }
+      }
+
+      function toggleBookCopies(bookId) {
+        const rowId = `book-row-${bookId}`;
+        const subRowId = `sub-row-${bookId}`;
+        const existingSubRow = document.getElementById(subRowId);
+
+        if (existingSubRow) {
+          existingSubRow.remove();
+          return;
+        }
+
+        const book = booksData.find(
+          (b) => String(b.bookId || b.id) === String(bookId),
+        );
+        const mainRow = document.getElementById(rowId);
+        const subRow = document.createElement("tr");
+        subRow.id = subRowId;
+        subRow.className = "sub-row";
+
+        let copiesHtml = `
+          <td colspan="7" style="padding: 0;">
+            <div class="sub-table-wrapper">
+        `;
+
+        if (!book || !book.copies || book.copies.length === 0) {
+          copiesHtml += `<div style="color: #94a3b8; font-size: 13px; text-align: center; padding: 10px;">No copies available for this book.</div>`;
+        } else {
+          copiesHtml += `
+            <table class="sub-table">
+              <thead>
+                <tr>
+                  <th>Copy ID</th>
+                  <th>Barcode</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+          `;
+
+          book.copies.forEach((c) => {
+            const copyId =
+              c.copyId !== undefined
+                ? c.copyId
+                : c.id !== undefined
+                  ? c.id
+                  : "-";
+            const barcode =
+              c.barcode !== undefined
+                ? c.barcode
+                : c.code !== undefined
+                  ? c.code
+                  : "N/A";
+            const statusStr = c.status ? c.status.toString() : "AVAILABLE";
+            const statusClass =
+              statusStr === "AVAILABLE" ? "badge-available" : "badge-borrowed";
+
+            copiesHtml += `
+              <tr>
+                <td>${copyId}</td>
+                <td>${barcode}</td>
+                <td><span class="badge-status ${statusClass}">${statusStr}</span></td>
+                <td>
+                  <button class="btn-delete" onclick="deleteBookCopy(${copyId}, event)">Delete</button>
+                </td>
+              </tr>
+            `;
+          });
+
+          copiesHtml += `</tbody></table></div></td>`;
+        }
+
+        subRow.innerHTML = copiesHtml;
+        mainRow.after(subRow);
+      }
+
+      async function deleteBookCopy(copyId, event) {
+        if (event) event.stopPropagation();
+
+        if (confirm("Are you sure you want to delete this book copy?")) {
+          try {
+            const response = await fetch(
+              CONTEXT_PATH + `/api/books/copy/delete?copyId=${copyId}`,
+              {
+                method: "DELETE",
+              },
+            );
+
+            if (response.ok) {
+              loadBooks();
+            } else {
+              let errorMsg = "Failed to delete book copy";
+              try {
+                const err = await response.json();
+                errorMsg = err.error || errorMsg;
+              } catch (e) {}
+              alert(errorMsg);
+            }
+          } catch (error) {
+            console.error("Error deleting copy:", error);
+            alert("An error occurred while deleting the copy.");
+          }
+        }
+      }
+
+      async function loadCategoriesDropdown() {
+        try {
+          const response = await fetch(CONTEXT_PATH + "/api/categories");
+          if (response.ok) {
+            const categories = await response.json();
+            const select = document.getElementById("categoryId");
+            categories.forEach((c) => {
+              const opt = document.createElement("option");
+              opt.value = c.categoryId || c.id;
+              opt.textContent = c.categoryName;
+              select.appendChild(opt);
+            });
+          }
+        } catch (error) {
+          console.error("Error loading categories:", error);
+        }
+      }
+
+      function openAddModal() {
+        document.getElementById("bookForm").reset();
+        document.getElementById("bookModal").classList.add("active");
+      }
+
+      function closeModal() {
+        document.getElementById("bookModal").classList.remove("active");
+      }
+
+      async function handleFormSubmit(event) {
+        event.preventDefault();
+
+        const requestData = {
+          title: document.getElementById("title").value,
+          author: document.getElementById("author").value,
+          isbn: document.getElementById("isbn").value,
+          barcode: document.getElementById("barcode").value,
+          quantity: parseInt(document.getElementById("quantity").value),
+          category: {
+            categoryId: parseInt(document.getElementById("categoryId").value),
+          },
+        };
+
+        const response = await fetch(CONTEXT_PATH + "/api/books/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        });
+
+        if (response.ok) {
+          closeModal();
+          loadBooks();
+        } else {
+          try {
+            const err = await response.json();
+            alert(err.error || "Failed to add book");
+          } catch (e) {
+            alert("Failed to add book");
+          }
+        }
+      }
+
+      async function deleteBook(id) {
+        if (confirm("Are you sure you want to delete this book?")) {
+          const response = await fetch(
+            CONTEXT_PATH + `/api/books/delete?bookId=${id}`,
+            {
+              method: "DELETE",
+            },
+          );
+
+          if (response.ok) {
+            loadBooks();
+          } else {
+            const err = await response.json();
+            alert(err.error || "Delete failed");
+          }
+        }
+      }
+
+      function navigateTo(page) {
+        window.location.assign(CONTEXT_PATH + "/" + page);
+      }
+
+      function logout() {
+        localStorage.removeItem("currentUser");
+
+        sessionStorage.removeItem("currentUser");
+        window.location.href = CONTEXT_PATH + "/login.html";
+      }
+    </script>
+  </body>
+</html>
