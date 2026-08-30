@@ -63,3 +63,35 @@ To get the database up and running with pre-configured dummy data and test users
 1. Build the project artifact (Run Maven clean package to generate the WAR file):
    ```bash
    mvn clean package
+   
+### Appendix: Apache Tomcat Installation from Scratch (If not installed)
+If you don't have Apache Tomcat set up on your machine yet, follow these steps to configure it from scratch:
+
+1. **Download Tomcat:**
+   * Go to the official website and download **Tomcat 10** (or higher) to ensure compatibility with Jakarta EE: [tomcat.apache.org](https://tomcat.apache.org/)
+   * Download the **Core** package in **ZIP** format (under the *Binary Distributions* section).
+
+2. **Extract the Files:**
+   * Extract the downloaded ZIP file to a preferred directory on your local machine (e.g., `C:\tomcat` or on your Desktop).
+
+3. **Configure Tomcat in your IDE (IntelliJ / Eclipse):**
+   * Open your IDE and navigate to your application server configurations (Application Servers / Server Configurations).
+   * Add a new server and select **Apache Tomcat**.
+   * Point the server directory to the folder where you extracted Tomcat in step 2.
+   * Make sure your JDK path (JDK 17+) is correctly linked to the server configuration.
+
+4. **Run the Application & Access Link:**
+   * Build your project artifact using Maven to generate the `.war` file:
+     ```bash
+     mvn clean package
+     ```
+   * Deploy the generated `.war` file to your configured Tomcat server instance.
+   * Start your Apache Tomcat server.
+   * Open your web browser and navigate to the default login path:
+     ```text
+     http://localhost:8080/librarysystem-1.0-SNAPSHOT/login.html
+     ```
+
+> **Note on Application Link:** 
+> The context path `librarysystem-1.0-SNAPSHOT` is the default name generated from the WAR file. If your deployed context path or WAR file name differs on your Tomcat server, make sure to adjust the URL accordingly.
+
